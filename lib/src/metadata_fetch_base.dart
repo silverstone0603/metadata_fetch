@@ -34,7 +34,7 @@ Future<Metadata> extract(String url) async {
     return defaultOutput;
   }
 
-  final data = _extractMetadata(document);
+  final data = await _extractMetadata(document);
   if (data == null) {
     return defaultOutput;
   }
@@ -62,6 +62,6 @@ Document responseToDocument(http.Response response) {
 /// Returns instance of [Metadata] with data extracted from the [html.Document]
 ///
 /// Future: Can pass in a strategy i.e: to retrieve only OpenGraph, or OpenGraph and Json+LD only
-Metadata _extractMetadata(Document document) {
-  return MetadataParser.parse(document);
+Future <Metadata> _extractMetadata(Document document) async {
+  return await MetadataParser.parse(document);
 }

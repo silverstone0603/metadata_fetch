@@ -1,20 +1,29 @@
 import 'package:html/dom.dart';
 import 'package:metadata_fetch/metadata_fetch.dart';
+import 'package:metadata_fetch/src/parsers/youtube_parser.dart';
 
 /// Does Works with `BaseMetadataParser`
 class MetadataParser {
+
+  static List<Metadata> parsers;
   /// This is the default strategy for building our [Metadata]
   ///
   /// It tries [OpenGraphParser], then [TwitterCardParser], then [JsonLdParser], and falls back to [HTMLMetaParser] tags for missing data.
-  static Metadata parse(Document document) {
+  static Future<Metadata> parse(Document document) async {
     final output = Metadata();
 
-    final parsers = [
+    parsers = [
       openGraph(document),
       twitterCard(document),
       jsonLdSchema(document),
       htmlMeta(document),
     ];
+
+    try{
+      parsers.add(await youtubeParser(document));
+    }catch (e){
+      print("There's no youtube data inside.");
+    }
 
     for (final p in parsers) {
       output.title ??= p.title;
@@ -40,6 +49,10 @@ class MetadataParser {
 
   static Metadata openGraph(Document document) {
     return OpenGraphParser(document).parse();
+  }
+
+  static Future<Metadata> youtubeParser(Document document) async {
+    return await YoutubeParser(document).toParse();
   }
 
   static Metadata htmlMeta(Document document) {

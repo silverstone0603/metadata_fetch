@@ -11,7 +11,7 @@ void main() {
     var url = 'https://flutter.dev';
     var response = await http.get(url);
     var document = responseToDocument(response);
-    var data = MetadataParser.parse(document);
+    var data = await MetadataParser.parse(document);
     print(data.toJson());
     expect(data.toJson().isNotEmpty, true);
   });
@@ -25,18 +25,18 @@ void main() {
     print(data);
 
     // Just Opengraph
-    var og = MetadataParser.OpenGraph(document);
+    var og = MetadataParser.openGraph(document);
     print('OG $og');
 
     // Just Html
-    var hm = MetadataParser.HtmlMeta(document);
+    var hm = MetadataParser.htmlMeta(document);
     print('Html $hm');
 
     // Just Json-ld schema
-    var js = MetadataParser.JsonLdSchema(document);
+    var js = MetadataParser.jsonLdSchema(document);
     print('JSON $js');
 
-    var twitter = MetadataParser.TwitterCard(document);
+    var twitter = MetadataParser.twitterCard(document);
     print('Twitter $twitter');
   });
   group('Metadata parsers', () {
