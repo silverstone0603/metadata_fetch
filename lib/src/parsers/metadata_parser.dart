@@ -5,11 +5,13 @@ import 'package:metadata_fetch/src/parsers/youtube_parser.dart';
 /// Does Works with `BaseMetadataParser`
 class MetadataParser {
 
-  static List<Metadata> parsers;
+  MetadataParser();
+
+  List<Metadata> parsers;
   /// This is the default strategy for building our [Metadata]
   ///
   /// It tries [OpenGraphParser], then [TwitterCardParser], then [JsonLdParser], and falls back to [HTMLMetaParser] tags for missing data.
-  static Future<Metadata> parse(Document document) async {
+  Future<Metadata> parse(Document document) async {
     final output = Metadata();
 
     parsers = [
@@ -39,7 +41,7 @@ class MetadataParser {
     return output;
   }
 
-  static String _imageUrl(Metadata data) {
+  String _imageUrl(Metadata data) {
     String imageLink = data.image;
     if (imageLink == null) return null;
     if (imageLink.startsWith("http")) return imageLink;
@@ -47,23 +49,23 @@ class MetadataParser {
     return pageUrl.scheme + "://" + pageUrl.host + imageLink;
   }
 
-  static Metadata openGraph(Document document) {
+  Metadata openGraph(Document document) {
     return OpenGraphParser(document).parse();
   }
 
-  static Future<Metadata> youtubeParser(Document document) async {
+  Future<Metadata> youtubeParser(Document document) async {
     return await YoutubeParser(document).toParse();
   }
 
-  static Metadata htmlMeta(Document document) {
+  Metadata htmlMeta(Document document) {
     return HtmlMetaParser(document).parse();
   }
 
-  static Metadata jsonLdSchema(Document document) {
+  Metadata jsonLdSchema(Document document) {
     return JsonLdParser(document).parse();
   }
 
-  static Metadata twitterCard(Document document) {
+  Metadata twitterCard(Document document) {
     return TwitterCardParser(document).parse();
   }
 }

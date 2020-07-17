@@ -8,79 +8,86 @@ import 'package:test/test.dart';
 // TODO: Improve testing
 void main() {
   test('JSON Serialization', () async {
+    MetadataFetcher _fetcher = MetadataFetcher();
     var url = 'https://flutter.dev';
     var response = await http.get(url);
-    var document = responseToDocument(response);
-    var data = await MetadataParser.parse(document);
+    var document = _fetcher.responseToDocument(response);
+    var data = await MetadataParser().parse(document);
     print(data.toJson());
     expect(data.toJson().isNotEmpty, true);
   });
 
   test('Metadata Parser', () async {
+    MetadataFetcher _fetcher = MetadataFetcher();
     var url = 'https://flutter.dev';
     var response = await http.get(url);
-    var document = responseToDocument(response);
+    var document = _fetcher.responseToDocument(response);
 
-    var data = MetadataParser.parse(document);
+    var data = MetadataParser().parse(document);
     print(data);
 
     // Just Opengraph
-    var og = MetadataParser.openGraph(document);
+    var og = MetadataParser().openGraph(document);
     print('OG $og');
 
     // Just Html
-    var hm = MetadataParser.htmlMeta(document);
+    var hm = MetadataParser().htmlMeta(document);
     print('Html $hm');
 
     // Just Json-ld schema
-    var js = MetadataParser.jsonLdSchema(document);
+    var js = MetadataParser().jsonLdSchema(document);
     print('JSON $js');
 
-    var twitter = MetadataParser.twitterCard(document);
+    var twitter = MetadataParser().twitterCard(document);
     print('Twitter $twitter');
   });
   group('Metadata parsers', () {
     test('JSONLD', () async {
+      MetadataFetcher _fetcher = MetadataFetcher();
       var url = 'https://www.epicurious.com/';
       var response = await http.get(url);
-      var document = responseToDocument(response);
+      var document = _fetcher.responseToDocument(response);
       // print(response.statusCode);
 
       print(JsonLdParser(document));
     });
 
     test('JSONLD II', () async {
+      MetadataFetcher _fetcher = MetadataFetcher();
       var url =
           'https://www.epicurious.com/expert-advice/best-soy-sauce-chefs-pick-article';
       var response = await http.get(url);
-      var document = responseToDocument(response);
+      var document = _fetcher.responseToDocument(response);
       // print(response.statusCode);
 
       print(JsonLdParser(document));
     });
 
     test('JSONLD III', () async {
+      MetadataFetcher _fetcher = MetadataFetcher();
       var url =
           'https://medium.com/@quicky316/install-flutter-sdk-on-windows-without-android-studio-102fdf567ce4';
       var response = await http.get(url);
-      var document = responseToDocument(response);
+      var document = _fetcher.responseToDocument(response);
       // print(response.statusCode);
 
       print(JsonLdParser(document));
     });
 
     test('JSONLD IV', () async {
+      MetadataFetcher _fetcher = MetadataFetcher();
       var url = 'https://www.distilled.net/';
       var response = await http.get(url);
-      var document = responseToDocument(response);
+      var document = _fetcher.responseToDocument(response);
       // print(response.statusCode);
 
       print(JsonLdParser(document));
     });
     test('HTML', () async {
+      MetadataFetcher _fetcher = MetadataFetcher();
       var url = 'https://flutter.dev';
       var response = await http.get(url);
-      var document = responseToDocument(response);
+      var document = _fetcher.responseToDocument(response);
       print(response.statusCode);
 
       print(HtmlMetaParser(document).title);
@@ -89,9 +96,10 @@ void main() {
     });
 
     test('OpenGraph Parser', () async {
+      MetadataFetcher _fetcher = MetadataFetcher();
       var url = 'https://flutter.dev';
       var response = await http.get(url);
-      var document = responseToDocument(response);
+      var document = _fetcher.responseToDocument(response);
       print(response.statusCode);
 
       print(OpenGraphParser(document));
@@ -101,10 +109,11 @@ void main() {
     });
 
     test('TwitterCard Parser', () async {
+      MetadataFetcher _fetcher = MetadataFetcher();
       var url =
           'https://www.epicurious.com/expert-advice/best-soy-sauce-chefs-pick-article';
       var response = await http.get(url);
-      var document = responseToDocument(response);
+      var document = _fetcher.responseToDocument(response);
       print(response.statusCode);
 
       print(TwitterCardParser(document));
@@ -116,9 +125,10 @@ void main() {
     });
 
     test('Faulty', () async {
+      MetadataFetcher _fetcher = MetadataFetcher();
       var url = 'https://google.ca';
       var response = await http.get(url);
-      var document = responseToDocument(response);
+      var document = _fetcher.responseToDocument(response);
       print(response.statusCode);
 
       print(OpenGraphParser(document).title);
@@ -133,30 +143,45 @@ void main() {
 
   group('extract()', () {
     test('First Test', () async {
-      var data = await extract('https://flutter.dev/');
+      MetadataFetcher _fetcher = MetadataFetcher(
+        url: "https://flutter.dev/",
+      );
+      var data = await _fetcher.extract();
       print(data);
       print(data.description);
       expect(data.toMap().isEmpty, false);
     });
 
     test('FB Test', () async {
-      var data = await extract('https://facebook.com/');
+      MetadataFetcher _fetcher = MetadataFetcher(
+        url: "https://facebook.com/",
+      );
+      var data = await _fetcher.extract();
       expect(data.toMap().isEmpty, false);
     });
 
     test('Unicode Test', () async {
-      var data = await extract('https://www.jpf.go.jp/');
+      MetadataFetcher _fetcher = MetadataFetcher(
+        url: "https://www.jpf.go.jp/",
+      );
+      var data = await _fetcher.extract();
       expect(data.toMap().isEmpty, false);
     });
 
     test('Gooogle Test', () async {
-      var data = await extract('https://google.ca');
+      MetadataFetcher _fetcher = MetadataFetcher(
+        url: "https://google.ca",
+      );
+      var data = await _fetcher.extract();
       expect(data.toMap().isEmpty, false);
       expect(data.title, 'google');
     });
 
     test('Invalid Url Test', () async {
-      var data = await extract('https://google');
+      MetadataFetcher _fetcher = MetadataFetcher(
+        url: "https://google",
+      );
+      var data = await _fetcher.extract();
       expect(data == null, true);
     });
   });
