@@ -42,8 +42,6 @@ class MetadataFetcher{
       return defaultOutput;
     }
 
-    print("주소가 뭐야: ${document.requestUrl} / ${document.head.innerHtml}");
-
     final data = await _extractMetadata(document);
 
     print(data.toString());
